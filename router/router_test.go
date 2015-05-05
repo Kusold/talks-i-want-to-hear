@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -33,7 +34,7 @@ func TestHomeRoute(t *testing.T) {
 	}
 	defer resp.Body.Close()
 
-	if string(body) != "Hello World" {
+	if !strings.Contains(string(body), "Hello World") {
 		t.Error("Unexpected body")
 	}
 }

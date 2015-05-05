@@ -1,8 +1,8 @@
 package router
 
 import (
-	"fmt"
 	"net/http"
+	"text/template"
 )
 
 func Router() {
@@ -10,5 +10,13 @@ func Router() {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World")
+	tpl, err := template.ParseFiles("../views/base.tpl")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = tpl.Execute(w, nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
