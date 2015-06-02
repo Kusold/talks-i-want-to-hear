@@ -11,9 +11,11 @@ var templates = make(map[string]*template.Template)
 func Router() {
 	// Load Templates
 	templates["index"] = template.Must(template.ParseFiles(getTemplatePath()+"/views/index.tpl", getTemplatePath()+"/views/base.tpl"))
+	templates["register"] = template.Must(template.ParseFiles(getTemplatePath()+"/views/register.tpl", getTemplatePath()+"/views/base.tpl"))
 
 	// Register Routes
 	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/register", registerHandler)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -25,6 +27,13 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		queryParam,
 	}
 	err := templates["index"].ExecuteTemplate(w, "base", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func registerHandler(w http.ResponseWriter, r *http.Request) {
+	err := templates["register"].ExecuteTemplate(w, "base", nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

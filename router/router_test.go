@@ -71,3 +71,39 @@ func TestHomeRouteWithGetQueryParameters(t *testing.T) {
 		t.Error("Unexpected body: " + string(body))
 	}
 }
+
+func TestRegisterRoute(t *testing.T) {
+	testServer := httptest.NewServer(nil)
+	defer testServer.Close()
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", testServer.URL+"/register", nil)
+	if err != nil {
+		t.Fatal("Error creating request")
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		t.Fatal("Error sending the request")
+	}
+	if resp.StatusCode != 200 {
+		t.Error("Unable to find route. Expected 200, Received", resp.StatusCode)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal("Unable to read body")
+	}
+	defer resp.Body.Close()
+
+	if !strings.Contains(string(body), "Register") {
+		t.Error("Unexpected body: " + string(body))
+	}
+	if !strings.Contains(string(body), `name="email"`) {
+		t.Error("Unexpected body: " + string(body))
+	}
+	if !strings.Contains(string(body), `name="password"`) {
+		t.Error("Unexpected body: " + string(body))
+	}
+}
