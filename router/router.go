@@ -15,10 +15,13 @@ func Router() {
 	templates["index"] = template.Must(template.ParseFiles(getTemplatePath()+"/views/index.tpl", getTemplatePath()+"/views/base.tpl"))
 	templates["register"] = template.Must(template.ParseFiles(getTemplatePath()+"/views/register.tpl", getTemplatePath()+"/views/base.tpl"))
 	templates["register-confirm"] = template.Must(template.ParseFiles(getTemplatePath()+"/views/register-confirm.tpl", getTemplatePath()+"/views/base.tpl"))
+	templates["login"] = template.Must(template.ParseFiles(getTemplatePath()+"/views/login.tpl", getTemplatePath()+"/views/base.tpl"))
+	templates["login-success"] = template.Must(template.ParseFiles(getTemplatePath()+"/views/login-success.tpl", getTemplatePath()+"/views/base.tpl"))
 
 	// Register Routes
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/register", registerHandler)
+	http.HandleFunc("/login", loginHandler)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,6 +67,40 @@ func registerPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = templates["register-confirm"].ExecuteTemplate(w, "base", user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		loginGetHandler(w, r)
+	case "POST":
+		loginPostHandler(w, r)
+	}
+}
+
+func loginGetHandler(w http.ResponseWriter, r *http.Request) {
+	err := templates["login"].ExecuteTemplate(w, "base", nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func loginPostHandler(w http.ResponseWriter, r *http.Request) {
+	user := models.User{
+		Email:    r.FormValue("email"),
+		Password: r.FormValue("password"),
+	}
+
+	_, err := user.HasValidCredentials()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = templates["login-success"].ExecuteTemplate(w, "base", user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
