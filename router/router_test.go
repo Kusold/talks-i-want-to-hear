@@ -72,7 +72,7 @@ func TestHomeRouteWithGetQueryParameters(t *testing.T) {
 	}
 }
 
-func TestRegisterRoute(t *testing.T) {
+func TestRegisterGetRoute(t *testing.T) {
 	testServer := httptest.NewServer(nil)
 	defer testServer.Close()
 
@@ -104,6 +104,32 @@ func TestRegisterRoute(t *testing.T) {
 		t.Error("Unexpected body: " + string(body))
 	}
 	if !strings.Contains(string(body), `name="password"`) {
+		t.Error("Unexpected body: " + string(body))
+	}
+}
+
+func TestRegisterPostRoute(t *testing.T) {
+	testServer := httptest.NewServer(nil)
+	defer testServer.Close()
+
+	resp, err := http.PostForm(testServer.URL+"/register", url.Values{"email": {"test@example.com"}, "password": {"secret"}})
+	if err != nil {
+		t.Fatal("Error sending the request")
+	}
+	if resp.StatusCode != 200 {
+		t.Error("Unable to find route. Expected 200, Received", resp.StatusCode)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal("Unable to read body")
+	}
+	defer resp.Body.Close()
+
+	if !strings.Contains(string(body), "Registration Successful") {
+		t.Error("Unexpected body: " + string(body))
+	}
+	if !strings.Contains(string(body), "test@example.com") {
 		t.Error("Unexpected body: " + string(body))
 	}
 }
