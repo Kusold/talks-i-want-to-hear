@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Kusold/talks-i-want-to-hear/router"
+	"github.com/kusold/talks-i-want-to-hear/router"
 )
 
 func main() {

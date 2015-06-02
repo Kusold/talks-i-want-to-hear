@@ -1,11 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-        <meta charset="UTF-8">
-        <title></title>
-</head>
-<body>
-       <h1>Hello World</h1>
-       <p>{{ .QueryParam }}</p>
-</body>
-</html>
+{{define "base"}}
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+          <meta charset="UTF-8">
+          <title></title>
+  </head>
+  <body>
+    {{ template "content" .}}
+  </body>
+  </html>
+{{end}}

@@ -6,29 +6,30 @@ import (
 	"text/template"
 )
 
+var templates = make(map[string]*template.Template)
+
 func Router() {
+	// Load Templates
+	templates["index"] = template.Must(template.ParseFiles(getTemplatePath()+"/views/index.tpl", getTemplatePath()+"/views/base.tpl"))
+
+	// Register Routes
 	http.HandleFunc("/", homeHandler)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	queryParam := r.URL.Query().Get("query")
-	tpl, err := template.ParseFiles(getTemplatePath() + "/views/base.tpl")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 
 	data := struct {
 		QueryParam string
 	}{
 		queryParam,
 	}
-	err = tpl.Execute(w, data)
+	err := templates["index"].ExecuteTemplate(w, "base", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
 func getTemplatePath() string {
-	return os.Getenv("GOPATH") + "/src/github.com/Kusold/talks-i-want-to-hear"
+	return os.Getenv("GOPATH") + "/src/github.com/kusold/talks-i-want-to-hear"
 }
